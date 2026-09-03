@@ -1,0 +1,19 @@
+"When people fail to follow these bizarre, secret rules, and the machine does
+the wrong thing, its operators are blamed for not understanding the machine, for
+not following its rigid specifications"
+
+something that I think isn't brought up enough in modern situations is the old IBM saying 
+"A computer cannot be held accountable, Therefore a Computer must never make a management decision" 
+in our modern era, these ideas that you can't blame a computer has been very selectively accepted and ignored when convenient. 
+We put Computers in management positions, and then when something goes wrong we blame no one, it's the machines fault.
+or when a computer makes a serious mistake it's obviously the workers fault, the people that put the machine in that position are completely ignored when it comes to blame.
+In a system with poor explanations, it's easier to ignore and put people down when things go wrong. 
+
+
+"Engineers are trained to think logically. As a result, they come to believe that
+all people must think this way, and they design their machines accordingly."
+
+Fairly common issue, when you expect people to think in the same manner as you, your designs will fail, because you think differently from everyone else.
+Everyone has a different train of thought and methods, many may seem completely backwards to you. 
+The issue most often faced by a designer is not how to get things to work, but how to make it obvious to as many as possible how to make something work. 
+
