@@ -1,0 +1,2 @@
+Make a bunch of statements for the current game state inside the draw function or 
+with some way to call teh draw function in order to load the right image and buttons

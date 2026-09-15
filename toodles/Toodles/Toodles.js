@@ -1,10 +1,20 @@
 let awnserResults = ["no", "yes", "maybe", "sometimes", "Ask Again Later", "Punch that mofo till he black n blue"]
 let awnser = "8";
+let img;
 
-function setup() {
+async function setup() {
     createCanvas(500, 700);
 
+    img = await loadImage('/assets/Illustration 20260908 2.png');
+
+  // Draw the image.
+
+
+    
 }
+
+
+
 
 function draw() {
     background(150);
@@ -17,6 +27,7 @@ function draw() {
     textAlign(CENTER, CENTER);
     textSize(32);
     text(awnser, width/2, 300);
+      image(img, 0, 0);
 
         //noLoop();
 
@@ -50,7 +61,7 @@ function mousePressed() {
     } 
     else {
         fill(150);
-    }
+    }   
 
 }
 
