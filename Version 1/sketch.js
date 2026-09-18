@@ -31,10 +31,12 @@ p.setup = () => { // Runs this Sketches setup function once when the sketch star
   p.createCanvas(width, height).parent("canvas1"); // Create a canvas and attach it to the div with id "canvas1"
   cols = p.floor(width / grid); // Calculate the number of columns based on the canvas width and scale
   rows = p.floor(height / grid); // Calculate the number of rows based on the canvas height and scale
+  p.frameRate(10); // Set frame rate to 10 per second
 
   p.noLoop(); // Disable continuous drawing to only draw once, comment out to cause seasures
 }
 p.draw = () => { // Runs this Sketches draw function continuously, note 60 per second
+  p.timecheck(); // Call the timecheck function every 10 seconds
   p.background(220); // Set the background color
   p.rect(width, height, 0, 0); // Draw a rectangle that covers the entire canvas
 
@@ -52,7 +54,7 @@ p.draw = () => { // Runs this Sketches draw function continuously, note 60 per s
       let y = j * grid; // Calculate the y position based on the row index and scale
 
       if (map[i][j] === 1) { // Check if the cell value is 1
-        p.fill(0); // Fill color for cells with value 1
+        p.fill(p.random (1, 255)); // Fill color for cells with value 1
       } else { // Otherwise, Genertate Random RGB values
         let r = p.random(1, 255);
         let g = p.random(1, 255);
@@ -67,11 +69,19 @@ p.draw = () => { // Runs this Sketches draw function continuously, note 60 per s
     if (p.millis() - lastTime > timeout) { // Check if the timeout has passed since the last loop execution
           p.noLoop();
           lastTime = p.millis();  // Update the last execution time to the current time
-    } else { // If the timeout has not passed, log a message to the console
+    } else { 
       p.loop(1); // Call the loop function to redraw the canvas
     }
     
 }
+
+
+  p.timecheck = () => { // Function to check the time since the last loop execution
+    if (p.millis() - lastTime > timeout) { // Check if the timeout has passed since the last loop execution
+      p.noLoop(); // Stop the loop if the timeout has passed
+      lastTime = p.millis(); // Update the last execution time to the current time
+    }
+  }
 };
 
 const sketch2 = (p) => {
