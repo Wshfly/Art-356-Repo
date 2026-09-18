@@ -72,7 +72,8 @@ p.draw = () => { // Runs this Sketches draw function continuously, note 60 per s
     } else { 
       p.loop(1); // Call the loop function to redraw the canvas
     }
-    
+    // Call the I and J arrays and compare with mouse position to get clicked on grid. 
+    // get clicked grid cell and randomize it
 }
 
 
