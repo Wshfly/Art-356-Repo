@@ -14,9 +14,13 @@
             <p class="eyebrow">VIDEO GAME SALES DATA</p>
             <h1>Compare games</h1>
             <p class="intro">Search the complete dataset and compare sales and review stats side by side.</p>
+            <nav class="mode-switch" aria-label="Choose a mode">
+                <button class="mode-button active" type="button" data-mode="compare" aria-pressed="true">Compare</button>
+                <button class="mode-button" type="button" data-mode="game" aria-pressed="false">Game mode</button>
+            </nav>
         </header>
 
-        <section class="comparison" aria-label="Game comparison">
+        <section id="compare-mode" class="comparison" aria-label="Game comparison">
             <article class="comparison-panel" data-panel="left" aria-labelledby="left-title">
                 <div class="panel-topline">
                     <span class="panel-number">01</span>
@@ -68,6 +72,53 @@
                     <p class="empty-state">Loading the game dataset...</p>
                 </div>
             </article>
+        </section>
+
+        <section id="game-mode" class="game-mode" aria-labelledby="game-mode-title" hidden>
+            <div class="game-mode-header">
+                <div>
+                    <p class="eyebrow">HIGHER OR LOWER</p>
+                    <h2 id="game-mode-title">Guess the stat</h2>
+                    <p class="intro">Compare the second game's stat with the first. One wrong guess ends your run.</p>
+                </div>
+                <div class="score-board" aria-live="polite">
+                    <div class="score-card">
+                        <span class="score-label">CURRENT SCORE</span>
+                        <strong id="game-score">0</strong>
+                    </div>
+                    <div class="score-card high-score-card">
+                        <span class="score-label">HIGH SCORE</span>
+                        <strong id="high-score">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-card">
+                <p id="quiz-metric" class="quiz-metric">Loading game data...</p>
+                <div class="quiz-games">
+                    <article class="quiz-game">
+                        <span class="quiz-label">FIRST GAME</span>
+                        <h3 id="quiz-first-title">—</h3>
+                        <p id="quiz-first-meta" class="game-meta"></p>
+                        <strong id="quiz-first-value" class="quiz-value"></strong>
+                    </article>
+                    <div class="quiz-versus" aria-hidden="true">VS</div>
+                    <article class="quiz-game quiz-game-second">
+                        <span class="quiz-label">SECOND GAME</span>
+                        <h3 id="quiz-second-title">—</h3>
+                        <p id="quiz-second-meta" class="game-meta"></p>
+                        <strong id="quiz-second-value" class="quiz-value">?</strong>
+                    </article>
+                </div>
+                <p id="quiz-prompt" class="quiz-prompt">Higher or Lower?</p>
+                <div class="guess-buttons" role="group" aria-label="Your guess">
+                    <button id="guess-higher" class="guess-button" type="button" disabled>Higher</button>
+                    <button id="guess-lower" class="guess-button" type="button" disabled>Lower</button>
+                </div>
+                <p id="quiz-feedback" class="quiz-feedback" aria-live="polite">A round will start when the dataset is ready.</p>
+                <p id="score-storage-status" class="score-storage-status" aria-live="polite"></p>
+                <button id="next-round" class="next-round" type="button" hidden>Next round</button>
+            </div>
         </section>
     </main>
 </body>

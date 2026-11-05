@@ -1,9 +1,25 @@
 const dataPath =
   "Introcsv common set values/Video_Games_Sales_as_at_22_Dec_2016.csv";
+const highScoreStorageKey = "videoGameComparison.highScore";
 const panels = ["left", "right"].map(createPanel);
+const quizMetrics = [
+  { label: "Global sales", field: "globalSales", unit: "M units", format: formatSales },
+  { label: "North America sales", field: "NA_Sales", unit: "M units", format: formatSales },
+  { label: "Europe sales", field: "EU_Sales", unit: "M units", format: formatSales },
+  { label: "Japan sales", field: "JP_Sales", unit: "M units", format: formatSales },
+  { label: "Other-region sales", field: "Other_Sales", unit: "M units", format: formatSales },
+  { label: "Critic score", field: "criticScore", unit: "points out of 100", format: formatScore },
+  { label: "User score", field: "userScore", unit: "points out of 10", format: formatScore },
+  { label: "Critic review count", field: "criticCount", unit: "reviews", format: formatCount },
+  { label: "User rating count", field: "userCount", unit: "ratings", format: formatCount }
+];
 let games = [];
 let gamesById = new Map();
 let dataError = null;
+let gameMode = false;
+let quizRound = null;
+let quizScore = 0;
+let quizHighScore = 0;
 
 function createPanel(side) {
   const root = document.querySelector(`[data-panel="${side}"]`);
@@ -66,6 +82,7 @@ async function loadGames() {
     gamesById = new Map(games.map(game => [String(game.id), game]));
 
     panels.forEach(updateSearch);
+    if (gameMode) startQuizRound();
   } catch (error) {
     dataError = error;
     console.error("Could not load the game data:", error);
@@ -73,6 +90,8 @@ async function loadGames() {
       panel.status.textContent = "The game dataset could not be loaded.";
       renderMessage(panel.card, error.message);
     });
+    document.getElementById("quiz-feedback").textContent =
+      "The game dataset could not be loaded.";
   }
 }
 
@@ -146,7 +165,11 @@ function gameFromRow(row, columnIndexes, id) {
     criticScore: number("Critic_Score"),
     criticCount: number("Critic_Count"),
     userScore: number("User_Score"),
-    userCount: number("User_Count")
+    userCount: number("User_Count"),
+    NA_Sales: number("NA_Sales"),
+    EU_Sales: number("EU_Sales"),
+    JP_Sales: number("JP_Sales"),
+    Other_Sales: number("Other_Sales")
   };
   game.searchableText = [
     game.name,
@@ -236,6 +259,190 @@ function setupSearch(panel) {
     const game = gamesById.get(option.dataset.gameId);
     if (game) selectGame(panel, game);
   });
+}
+
+function setupModeControls() {
+  loadHighScore();
+
+  document.querySelectorAll(".mode-button").forEach(button => {
+    button.addEventListener("click", () => {
+      gameMode = button.dataset.mode === "game";
+      document.getElementById("compare-mode").hidden = gameMode;
+      document.getElementById("game-mode").hidden = !gameMode;
+      document.querySelectorAll(".mode-button").forEach(modeButton => {
+        const active = modeButton === button;
+        modeButton.classList.toggle("active", active);
+        modeButton.setAttribute("aria-pressed", String(active));
+      });
+
+      if (gameMode && !quizRound && games.length) {
+        startQuizRound();
+      }
+    });
+  });
+
+  document.getElementById("guess-higher").addEventListener("click", () => {
+    submitGuess("higher");
+  });
+  document.getElementById("guess-lower").addEventListener("click", () => {
+    submitGuess("lower");
+  });
+  document.getElementById("next-round").addEventListener("click", () => {
+    if (quizRound && !quizRound.answered) return;
+    if (quizRound && !quizRound.correctGuess) {
+      quizScore = 0;
+      document.getElementById("game-score").textContent = "0";
+    }
+    startQuizRound();
+  });
+}
+
+function loadHighScore() {
+  try {
+    const storedScore = window.localStorage.getItem(highScoreStorageKey);
+    if (storedScore === null) return;
+
+    const parsedScore = Number(storedScore);
+    if (!Number.isSafeInteger(parsedScore) || parsedScore < 0) {
+      throw new Error("The saved high score is not a valid non-negative integer.");
+    }
+
+    quizHighScore = parsedScore;
+    document.getElementById("high-score").textContent = String(quizHighScore);
+  } catch (error) {
+    console.error("Could not load the saved high score:", error);
+    document.getElementById("score-storage-status").textContent =
+      "The saved high score could not be loaded in this browser.";
+  }
+}
+
+function saveHighScore(score) {
+  const isNewHighScore = score > quizHighScore;
+  if (isNewHighScore) {
+    quizHighScore = score;
+    document.getElementById("high-score").textContent = String(quizHighScore);
+  }
+  try {
+    window.localStorage.setItem(highScoreStorageKey, String(quizHighScore));
+    document.getElementById("score-storage-status").textContent = "";
+  } catch (error) {
+    console.error("Could not save the high score:", error);
+    document.getElementById("score-storage-status").textContent =
+      "The high score is updated for this visit but could not be saved in this browser.";
+  }
+  return isNewHighScore;
+}
+
+function startQuizRound() {
+  const possibleRounds = quizMetrics.flatMap(metric => {
+    const availableGames = games.filter(game =>
+      Number.isFinite(game[metric.field])
+    );
+    const distinctValues = new Set(
+      availableGames.map(game => game[metric.field])
+    );
+    if (availableGames.length < 2 || distinctValues.size < 2) return [];
+
+    return [{ metric, availableGames }];
+  });
+
+  if (possibleRounds.length === 0) {
+    document.getElementById("quiz-feedback").textContent =
+      "How did you even get here? There are no available rounds for the current dataset. that's like over 10,000 games";
+    setGuessButtonsEnabled(false);
+    return;
+  }
+
+  const roundType = randomItem(possibleRounds);
+  const firstGame = randomItem(roundType.availableGames);
+  const comparisonGames = roundType.availableGames.filter(
+    game => game.id !== firstGame.id && // Checks if the game is the same as the first or shares a score
+      game[roundType.metric.field] !== firstGame[roundType.metric.field]
+  );
+  if (comparisonGames.length === 0) {
+    document.getElementById("quiz-feedback").textContent =
+      "A comparison round could not be generated. Try another round.";
+    setGuessButtonsEnabled(false);
+    return;
+  }
+
+  quizRound = {
+    metric: roundType.metric,
+    firstGame,
+    secondGame: randomItem(comparisonGames),
+    answered: false
+  };
+  renderQuizRound();
+}
+
+function renderQuizRound() {
+  if (!quizRound) return;
+
+  const { metric, firstGame, secondGame } = quizRound;
+  document.getElementById("quiz-metric").textContent =
+    `${metric.label} (${metric.unit})`;
+  document.getElementById("quiz-first-title").textContent =
+    firstGame.name || "Unknown title";
+  document.getElementById("quiz-first-meta").textContent = gameLabel(firstGame);
+  document.getElementById("quiz-first-value").textContent =
+    metric.format(firstGame[metric.field]);
+  document.getElementById("quiz-second-title").textContent =
+    secondGame.name || "Unknown title";
+  document.getElementById("quiz-second-meta").textContent = gameLabel(secondGame);
+  document.getElementById("quiz-second-value").textContent = "?";
+  document.getElementById("quiz-second-value").classList.remove("revealed");
+  document.getElementById("quiz-prompt").textContent =
+    "Higher or Lower?";
+  document.getElementById("quiz-feedback").textContent = "Choose higher or lower.";
+  document.getElementById("quiz-feedback").className = "quiz-feedback";
+  document.getElementById("next-round").hidden = true;
+  document.getElementById("next-round").textContent = "Next round";
+  setGuessButtonsEnabled(true);
+}
+
+function submitGuess(guess) {
+  if (!quizRound || quizRound.answered) return;
+
+  const { metric, firstGame, secondGame } = quizRound;
+  const isHigher = secondGame[metric.field] > firstGame[metric.field];
+  const correctGuess = (guess === "higher") === isHigher;
+  quizRound.answered = true;
+  quizRound.correctGuess = correctGuess;
+  if (correctGuess) {
+    quizScore += 1;
+    document.getElementById("game-score").textContent = String(quizScore);
+  } else {
+    const newHighScore = saveHighScore(quizScore);
+    document.getElementById("next-round").textContent = "Play again";
+    document.getElementById("quiz-feedback").textContent = newHighScore
+      ? `Game over! Your run score of ${quizScore} is a new high score, good job.` 
+      : `Game over. Your run score was ${quizScore}.`; 
+  }
+
+  document.getElementById("quiz-second-value").textContent =
+    metric.format(secondGame[metric.field]);
+  document.getElementById("quiz-second-value").classList.add("revealed");
+  document.getElementById("quiz-prompt").textContent =
+    `The second game's stat was ${isHigher ? "higher" : "lower"}.`;
+  if (correctGuess) {
+    document.getElementById("quiz-feedback").textContent =
+      "+1 Point";
+    document.getElementById("quiz-feedback").className = "quiz-feedback correct";
+  } else {
+    document.getElementById("quiz-feedback").className =
+      "quiz-feedback incorrect";
+  }
+  setGuessButtonsEnabled(false);
+  document.getElementById("next-round").hidden = false;
+}
+
+function setGuessButtonsEnabled(enabled) {
+  document.getElementById("guess-higher").disabled = !enabled;
+  document.getElementById("guess-lower").disabled = !enabled;
+}
+
+function randomItem(items) {
+  return items[Math.floor(Math.random() * items.length)];
 }
 
 function updateSearch(panel) {
@@ -490,7 +697,12 @@ function formatScore(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
+function formatCount(value) {
+  return value.toLocaleString();
+}
+
 panels.forEach(setupSearch);
+setupModeControls();
 loadGames();
 
 document.addEventListener("pointerdown", event => {

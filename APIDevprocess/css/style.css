@@ -12,7 +12,6 @@
 }
 
 body {
-    min-width: 320px;
     min-height: 100vh;
     margin: 0;
     background:
@@ -23,6 +22,10 @@ body {
 button,
 input {
     font: inherit;
+}
+
+[hidden] {
+    display: none !important;
 }
 
 .app {
@@ -37,7 +40,7 @@ input {
 
 .eyebrow {
     margin: 0 0 10px;
-    color: #20836e;
+    color: teal;
     font-size: 12px;
     font-weight: 750;
     letter-spacing: 0.14em;
@@ -61,9 +64,44 @@ h1 {
 .intro {
     max-width: 620px;
     margin-bottom: 0;
-    color: #64727e;
+    color: darkgray;
     font-size: 16px;
     line-height: 1.5;
+}
+
+.mode-switch {
+    display: inline-flex;
+    gap: 4px;
+    margin-top: 24px;
+    padding: 4px;
+    border: 1px solid lightgray;
+    border-radius: 11px;
+    background: tan;
+}
+
+.mode-button {
+    min-height: 38px;
+    padding: 0 15px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #64727e;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.mode-button.active {
+    background: #fff;
+    color: #176b5b;
+    box-shadow: 0 1px 3px rgb(23 33 43 / 12%);
+}
+
+.mode-button:focus-visible,
+.guess-button:focus-visible,
+.next-round:focus-visible {
+    outline: 3px solid rgb(49 161 132 / 32%);
+    outline-offset: 2px;
 }
 
 .comparison {
@@ -71,6 +109,254 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
     align-items: start;
+}
+
+.game-mode {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.game-mode-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.game-mode-header .eyebrow {
+    margin-bottom: 8px;
+}
+
+.game-mode-header h2 {
+    margin-bottom: 8px;
+    font-size: clamp(26px, 3vw, 34px);
+    letter-spacing: -0.035em;
+}
+
+.game-mode-header .intro {
+    max-width: 580px;
+}
+
+.score-board {
+    display: flex;
+    flex-shrink: 0;
+    gap: 10px;
+}
+
+.score-card {
+    display: grid;
+    min-width: 112px;
+    padding: 12px 18px;
+    border: 1px solid #dcebe6;
+    border-radius: 12px;
+    background: #f0f8f5;
+    text-align: center;
+}
+
+.high-score-card {
+    border-color: #f0e2c9;
+    background: #fffaf1;
+}
+
+.score-label {
+    color: #647b72;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+}
+
+.score-card strong {
+    margin-top: 2px;
+    color: #176b5b;
+    font-size: 28px;
+    font-variant-numeric: tabular-nums;
+}
+
+.high-score-card strong {
+    color: #a86508;
+}
+
+.quiz-card {
+    padding: clamp(20px, 4vw, 36px);
+    border: 1px solid #e3e8ec;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 12px 35px rgb(23 33 43 / 6%);
+}
+
+.quiz-metric {
+    margin-bottom: 24px;
+    color: #176b5b;
+    font-size: 15px;
+    font-weight: 750;
+    text-align: center;
+}
+
+.quiz-games {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+}
+
+.quiz-game {
+    min-width: 0;
+    min-height: 190px;
+    padding: 22px;
+    border: 1px solid #e6ecef;
+    border-radius: 13px;
+    background: #fbfcfd;
+}
+
+.quiz-game-second {
+    border-color: #f0e2c9;
+    background: #fffaf1;
+}
+
+.quiz-label {
+    display: block;
+    margin-bottom: 15px;
+    color: #7a8790;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+}
+
+.quiz-game h3 {
+    margin-bottom: 7px;
+    overflow-wrap: anywhere;
+    font-size: 21px;
+    letter-spacing: -0.025em;
+    line-height: 1.25;
+}
+
+.quiz-game .game-meta {
+    min-height: 20px;
+    font-size: 12px;
+}
+
+.quiz-value {
+    display: block;
+    margin-top: 18px;
+    color: #176b5b;
+    font-size: 27px;
+    font-variant-numeric: tabular-nums;
+}
+
+.quiz-game-second .quiz-value {
+    color: #a86508;
+}
+
+.quiz-value.revealed {
+    animation: reveal-value 220ms ease-out;
+}
+
+.quiz-versus {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 50%;
+    background: #f0f3f5;
+    color: #81909a;
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.quiz-prompt {
+    margin: 28px 0 16px;
+    color: #33434e;
+    font-size: 15px;
+    font-weight: 650;
+    text-align: center;
+}
+
+.guess-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.guess-button,
+.next-round {
+    min-width: 145px;
+    min-height: 46px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: 10px;
+    background: #176b5b;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    transition: background 140ms ease, transform 140ms ease;
+}
+
+.guess-button:hover:not(:disabled),
+.next-round:hover {
+    transform: translateY(-1px);
+    background: #125648;
+}
+
+.guess-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.guess-button:last-child {
+    background: #a86508;
+}
+
+.guess-button:last-child:hover:not(:disabled) {
+    background: #8c5205;
+}
+
+.quiz-feedback {
+    min-height: 24px;
+    margin: 18px 0 0;
+    color: #64727e;
+    font-size: 14px;
+    text-align: center;
+}
+
+.quiz-feedback.correct {
+    color: #176b5b;
+    font-weight: 700;
+}
+
+.quiz-feedback.incorrect {
+    color: #a14c3a;
+    font-weight: 650;
+}
+
+.score-storage-status {
+    margin: 10px 0 0;
+    color: #a14c3a;
+    font-size: 12px;
+    text-align: center;
+}
+
+.next-round {
+    display: block;
+    margin: 14px auto 0;
+    background: #263640;
+}
+
+.next-round:hover {
+    background: #17212b;
+}
+
+@keyframes reveal-value {
+    from {
+        opacity: 0.4;
+        transform: translateY(3px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .comparison-panel {
@@ -366,5 +652,49 @@ h1 {
 
     .review-grid {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .game-mode-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .score-board {
+        align-self: flex-start;
+    }
+
+    .score-card {
+        min-width: 74px;
+        padding: 9px 12px;
+    }
+
+    .score-board {
+        gap: 6px;
+    }
+
+    .score-label {
+        font-size: 9px;
+    }
+
+    .quiz-games {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .quiz-game {
+        min-height: 0;
+        padding: 18px;
+    }
+
+    .quiz-versus {
+        margin: -4px auto;
+    }
+
+    .guess-buttons {
+        gap: 8px;
+    }
+
+    .guess-button {
+        min-width: 0;
+        flex: 1;
     }
 }
