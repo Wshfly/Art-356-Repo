@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Compare video game sales, regional performance, and review scores.">
+    <title>Video Game Comparison</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="sketch.js" defer></script>
+</head>
+<body>
+    <main class="app">
+        <header class="page-header">
+            <p class="eyebrow">VIDEO GAME SALES DATA</p>
+            <h1>Compare games</h1>
+            <p class="intro">Search the complete dataset and compare sales and review stats side by side.</p>
+        </header>
+
+        <section class="comparison" aria-label="Game comparison">
+            <article class="comparison-panel" data-panel="left" aria-labelledby="left-title">
+                <div class="panel-topline">
+                    <span class="panel-number">01</span>
+                    <h2 id="left-title">First game</h2>
+                </div>
+                <div class="search-control">
+                    <label for="left-search">Search the dataset</label>
+                    <input
+                        id="left-search"
+                        class="game-search"
+                        type="search"
+                        placeholder="Title, console, year, genre, publisher..."
+                        autocomplete="off"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded="false"
+                        aria-controls="left-suggestions"
+                    >
+                    <ul id="left-suggestions" class="suggestions" role="listbox" hidden></ul>
+                    <p class="search-status" aria-live="polite">Loading the full dataset...</p>
+                </div>
+                <div class="game-card" aria-live="polite">
+                    <p class="empty-state">Loading the game dataset...</p>
+                </div>
+            </article>
+
+            <article class="comparison-panel" data-panel="right" aria-labelledby="right-title">
+                <div class="panel-topline">
+                    <span class="panel-number">02</span>
+                    <h2 id="right-title">Second game</h2>
+                </div>
+                <div class="search-control">
+                    <label for="right-search">Search the dataset</label>
+                    <input
+                        id="right-search"
+                        class="game-search"
+                        type="search"
+                        placeholder="Title, console, year, genre, publisher..."
+                        autocomplete="off"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded="false"
+                        aria-controls="right-suggestions"
+                    >
+                    <ul id="right-suggestions" class="suggestions" role="listbox" hidden></ul>
+                    <p class="search-status" aria-live="polite">Loading the full dataset...</p>
+                </div>
+                <div class="game-card" aria-live="polite">
+                    <p class="empty-state">Loading the game dataset...</p>
+                </div>
+            </article>
+        </section>
+    </main>
+</body>
+</html>
